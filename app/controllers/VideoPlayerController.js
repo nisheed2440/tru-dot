@@ -17,14 +17,5 @@ angular.module('tru.').controller('VideoPlayerController', [
       theme: "bower_components/videogular-themes-default/videogular.css"
     };
 
-    speakService.speak('Now playing ' + $rootScope.currentMedia.label + '!', function () {
-      "use strict";
-      $rootScope.$apply(function () {
-        $ctrl.autoplay = true;
-      });
-    });
-
-    $scope.$on('$destroy', function () {
-      speakService.stop();
-    });
+    $ctrl.autoplay = true;
   }]);

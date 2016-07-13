@@ -11,7 +11,8 @@ angular.module('tru.').config(['$routeProvider', function ($routeProvider) {
     })
     .when('/home/:type', {
       templateUrl: 'app/partials/file-view.html',
-      controller: 'FileViewController'
+      controller: 'FileViewController',
+      controllerAs: '$ctrl'
     })
     .when('/home/:type/video', {
       templateUrl: 'app/partials/video-player.html',

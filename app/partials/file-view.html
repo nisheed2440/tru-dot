@@ -10,15 +10,13 @@
 </div>
 <div class="md-padding" flex="noshrink">
   <md-card md-whiteframe="10">
-    <md-subheader>{{folderName}}</md-subheader>
+    <md-subheader>{{$ctrl.folderName}}</md-subheader>
     <md-list>
       <md-divider ng-if="files.length"></md-divider>
       <div ng-repeat="file in files" ng-if="files.length">
         <md-list-item
-          class="md-2-line"
-          ng-click="playMedia(file)"
-          ng-mouseenter="toneOn($index)"
-          ng-mouseleave="toneOff($index)">
+          class="md-2-line td-list-item"
+          ng-click="playMedia(file)">
           <md-icon class="md-avatar-icon" md-svg-src="{{file.icon}}"></md-icon>
           <div class="md-list-item-text">
             <h3>{{ file.label }}</h3>

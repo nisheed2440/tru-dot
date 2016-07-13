@@ -9,30 +9,63 @@ angular.module('tru.').controller('FileViewController', [
   'oscillatorService',
   'speakService',
   '$mdToast',
-  function ($rootScope, $scope, $location, $routeParams, electron, _, Tone, oscillatorService, speakService, $mdToast) {
+  '$timeout',
+  function ($rootScope, $scope, $location, $routeParams, electron, _, Tone, oscillatorService, speakService, $mdToast, $timeout) {
     console.log('Tru. File View!');
 
-    var ipcRenderer = electron.ipcRenderer;
-    $scope.folderName = $routeParams.type;
-    $scope.fileExtensions = [];
+    var $ctrl = this;
+
+    $ctrl.toneTimeout = null;
+
+    //Instance of ipcRender
+    $ctrl.ipcRenderer = electron.ipcRenderer;
+
+    //Get the keypress from main process
+    $ctrl.keypressHandler = function (e, action) {
+      switch (action) {
+        case 'up':
+          //Up handler
+          $ctrl.upHandler();
+          break;
+        case 'down':
+          //Down handler
+          $ctrl.downHandler();
+          break;
+        case 'select':
+          //select handler
+          $ctrl.selectHandler();
+          break;
+        case 'info':
+          //info handler
+          $ctrl.infoHandler();
+          break;
+        case 'back':
+          //info handler
+          $rootScope.$evalAsync(function () {
+            $scope.homeView();
+          });
+          break;
+      }
+    };
+
+    $ctrl.folderName = $routeParams.type;
+    $ctrl.fileExtensions = [];
     $scope.files = [];
 
-    speakService.speak($scope.folderName);
-
-    switch ($scope.folderName) {
+    switch ($ctrl.folderName) {
       case 'music':
       case 'audiobooks':
-        $scope.fileExtensions = ['.mp3'];
+        $ctrl.fileExtensions = ['.mp3'];
         $scope.fileIcon = 'assets/ic_library_music_24px.svg';
         break;
       case 'movies':
-        $scope.fileExtensions = ['.mp4'];
+        $ctrl.fileExtensions = ['.mp4'];
         $scope.fileIcon = 'assets/ic_movie_24px.svg';
         break;
 
     }
 
-    $scope.tree = ipcRenderer.sendSync('tru.directory', $scope.folderName, $scope.fileExtensions);
+    $scope.tree = $ctrl.ipcRenderer.sendSync('tru.directory', $ctrl.folderName, $ctrl.fileExtensions);
 
     if ($scope.tree) {
       _.each($scope.tree.children, function (file) {
@@ -56,30 +89,97 @@ angular.module('tru.').controller('FileViewController', [
       "use strict";
       $rootScope.backPath = $location.path();
       $rootScope.currentMedia = file;
-      $rootScope.currentMediaExt = $scope.fileExtensions;
-      var playerType = $scope.folderName === 'music' || $scope.folderName === 'audiobooks' ? 'audio' : 'video';
-      $location.path('/home/' + $scope.folderName + '/' + playerType);
+      $rootScope.currentMediaExt = $ctrl.fileExtensions;
+      var playerType = $ctrl.folderName === 'music' || $ctrl.folderName === 'audiobooks' ? 'audio' : 'video';
+      $location.path('/home/' + $ctrl.folderName + '/' + playerType);
     };
 
-    $scope.freqencyIntervals = oscillatorService.getIntervals($scope.files.length);
+
+    $ctrl.currentIndex = -1;
+
+    $timeout(function () {
+      $ctrl.listItems = document.querySelectorAll('.td-list-item');
+    });
+
+
+    $ctrl.truDotModeWatcher = $scope.$watch('truDotMode', function (newValue) {
+      if (newValue) {
+        //Tell the main process home page is loaded
+        $ctrl.ipcRenderer.sendSync('files-keys', true);
+        //What page it is
+        speakService.stop();
+        speakService.speak($ctrl.folderName + ' List!');
+        // Add channel listener
+        $ctrl.ipcRenderer.on('keypress', $ctrl.keypressHandler);
+      } else {
+        //Release keys
+        $ctrl.ipcRenderer.sendSync('release-keys', true);
+        //stop and speech going on`
+        speakService.stop();
+        //Remove event listeners
+        $ctrl.ipcRenderer.removeAllListeners('files-keys');
+      }
+    });
+
+    $ctrl.upHandler = function () {
+      var nextIndex = $ctrl.currentIndex - 1;
+      if (nextIndex < 0) {
+        $ctrl.playTone(60);
+      } else {
+        $ctrl.currentIndex = nextIndex;
+        $ctrl.playTone();
+      }
+    };
+
+    $ctrl.downHandler = function () {
+      var nextIndex = $ctrl.currentIndex + 1;
+      if (nextIndex > ($ctrl.listItems.length - 1)) {
+        $ctrl.playTone(60);
+      } else {
+        $ctrl.currentIndex = nextIndex;
+        $ctrl.playTone();
+      }
+    };
+
+    $ctrl.infoHandler = function () {
+      if ($ctrl.currentIndex !== -1) {
+        speakService.stop();
+        speakService.speak($scope.files[$ctrl.currentIndex].label);
+        $mdToast.show($mdToast.simple().textContent($scope.files[$ctrl.currentIndex].label + ' sent to braille controller!'));
+      }
+    };
+
+    $ctrl.selectHandler = function () {
+      if ($ctrl.currentIndex !== -1) {
+        console.log($ctrl.listItems[$ctrl.currentIndex]);
+        angular.element($ctrl.listItems[$ctrl.currentIndex]).find('button').triggerHandler('click');
+      }
+    };
+
+    /*Oscilloscope*/
+    $ctrl.freqIntervals = oscillatorService.getIntervals($scope.files.length);
     oscillatorService.startOsc();
 
-    $scope.toneOn = function (index) {
-      "use strict";
-      $mdToast.showSimple($scope.files[index].label + ' sent to braille controller!');
-      oscillatorService.updateOsc($scope.freqencyIntervals[index]);
+    $ctrl.playTone = function (frequency) {
+      if ($ctrl.toneTimeout) {
+        $timeout.cancel($ctrl.toneTimeout);
+        oscillatorService.muteOsc();
+      }
+      var newFrequency = frequency || $ctrl.freqIntervals[$ctrl.currentIndex];
+      oscillatorService.updateOsc(newFrequency);
       oscillatorService.unmuteOsc();
-    };
-
-    $scope.toneOff = function (index) {
-      "use strict";
-      oscillatorService.muteOsc();
+      $ctrl.toneTimeout = $timeout(function () {
+        oscillatorService.muteOsc();
+      }, 1000);
     };
 
     $scope.$on('$destroy', function () {
-      "use strict";
       speakService.stop();
-      oscillatorService.stopOsc();
+      $ctrl.truDotModeWatcher();
+      //Release keys
+      $ctrl.ipcRenderer.sendSync('release-keys', true);
+      //Remove event listeners
+      $ctrl.ipcRenderer.removeAllListeners('files-keys');
     });
 
   }]);

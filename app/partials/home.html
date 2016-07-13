@@ -12,10 +12,9 @@
       <md-divider></md-divider>
       <div ng-repeat="option in options">
         <md-list-item
-          class="md-2-line"
+          class="md-2-line td-list-item"
           ng-click="folderView(option.label)"
-          ng-mouseenter="toneOn($index)"
-          ng-mouseleave="toneOff($index)"
+          ng-if="option.enabled"
           >
           <md-icon class="md-avatar-icon" md-svg-src="{{option.icon}}"></md-icon>
           <div class="md-list-item-text">
