@@ -1,16 +1,30 @@
 angular.module('tru.').controller('AudioPlayerController', [
   '$rootScope',
+  '$scope',
   '$location',
-  function ($rootScope, $location) {
-    this.config = {
+  'speakService',
+  function ($rootScope, $scope, $location, speakService) {
+    var $ctrl = this;
+
+    $ctrl.config = {
       sources: [
         {src: $rootScope.currentMedia.path, type: "audio/mpeg"}
       ],
       theme: "bower_components/videogular-themes-default/videogular.css"
     };
-    this.autoplay = true;
-    this.filesView = function () {
-      "use strict";
+
+    $ctrl.filesView = function () {
       $location.path($rootScope.backPath);
-    }
+    };
+
+    speakService.speak('Now playing ' + $rootScope.currentMedia.label + '!', function () {
+      "use strict";
+      $rootScope.$apply(function () {
+        $ctrl.autoplay = true;
+      });
+    });
+
+    $scope.$on('$destroy', function () {
+      speakService.stop();
+    });
   }]);

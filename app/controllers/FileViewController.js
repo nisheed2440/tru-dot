@@ -5,13 +5,19 @@ angular.module('tru.').controller('FileViewController', [
   '$routeParams',
   'electron',
   'lodash',
-  function ($rootScope, $scope, $location, $routeParams, electron, _) {
+  'tone',
+  'oscillatorService',
+  'speakService',
+  function ($rootScope, $scope, $location, $routeParams, electron, _, Tone, oscillatorService, speakService) {
     console.log('Tru. File View!');
 
     var ipcRenderer = electron.ipcRenderer;
     $scope.folderName = $routeParams.type;
     $scope.fileExtensions = [];
     $scope.files = [];
+
+    speakService.speak($scope.folderName);
+
     switch ($scope.folderName) {
       case 'music':
       case 'audiobooks':
@@ -24,6 +30,7 @@ angular.module('tru.').controller('FileViewController', [
         break;
 
     }
+
     $scope.tree = ipcRenderer.sendSync('tru.directory', $scope.folderName, $scope.fileExtensions);
 
     if ($scope.tree) {
@@ -52,4 +59,25 @@ angular.module('tru.').controller('FileViewController', [
       var playerType = $scope.folderName === 'music' || $scope.folderName === 'audiobooks' ? 'audio' : 'video';
       $location.path('/home/' + $scope.folderName + '/' + playerType);
     };
+
+    $scope.freqencyIntervals = oscillatorService.getIntervals($scope.files.length);
+    oscillatorService.startOsc();
+
+    $scope.toneOn = function (index) {
+      "use strict";
+      oscillatorService.updateOsc($scope.freqencyIntervals[index]);
+      oscillatorService.unmuteOsc();
+    };
+
+    $scope.toneOff = function (index) {
+      "use strict";
+      oscillatorService.muteOsc();
+    };
+
+    $scope.$on('$destroy', function () {
+      "use strict";
+      speakService.stop();
+      oscillatorService.stopOsc();
+    });
+
   }]);

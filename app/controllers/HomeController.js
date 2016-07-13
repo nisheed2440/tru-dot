@@ -2,8 +2,13 @@ angular.module('tru.').controller('HomeController', [
   '$rootScope',
   '$scope',
   '$location',
-  function ($rootScope, $scope, $location) {
+  'tone',
+  'oscillatorService',
+  'speakService',
+  function ($rootScope, $scope, $location, Tone, oscillatorService,speakService) {
     console.log('Tru. Home!');
+
+    speakService.speak('Home Page!');
 
     $scope.options = [
       {
@@ -22,8 +27,29 @@ angular.module('tru.').controller('HomeController', [
         excerpt: 'Watch movies on the go'
       }
     ];
+
     $scope.folderView = function (type) {
       "use strict";
       $location.path('/home/' + type.toLowerCase());
     };
+
+    $scope.freqencyIntervals = oscillatorService.getIntervals($scope.options.length);
+    oscillatorService.startOsc();
+
+    $scope.toneOn = function (index) {
+      "use strict";
+      oscillatorService.updateOsc($scope.freqencyIntervals[index]);
+      oscillatorService.unmuteOsc();
+    };
+
+    $scope.toneOff = function (index) {
+      "use strict";
+      oscillatorService.muteOsc();
+    };
+
+    $scope.$on('$destroy', function () {
+      "use strict";
+      speakService.stop();
+      oscillatorService.stopOsc();
+    });
   }]);
