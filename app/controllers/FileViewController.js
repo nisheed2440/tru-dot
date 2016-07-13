@@ -8,7 +8,8 @@ angular.module('tru.').controller('FileViewController', [
   'tone',
   'oscillatorService',
   'speakService',
-  function ($rootScope, $scope, $location, $routeParams, electron, _, Tone, oscillatorService, speakService) {
+  '$mdToast',
+  function ($rootScope, $scope, $location, $routeParams, electron, _, Tone, oscillatorService, speakService, $mdToast) {
     console.log('Tru. File View!');
 
     var ipcRenderer = electron.ipcRenderer;
@@ -65,6 +66,7 @@ angular.module('tru.').controller('FileViewController', [
 
     $scope.toneOn = function (index) {
       "use strict";
+      $mdToast.showSimple($scope.files[index].label + ' sent to braille controller!');
       oscillatorService.updateOsc($scope.freqencyIntervals[index]);
       oscillatorService.unmuteOsc();
     };

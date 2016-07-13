@@ -3,7 +3,8 @@ angular.module('tru.').controller('AudioPlayerController', [
   '$scope',
   '$location',
   'speakService',
-  function ($rootScope, $scope, $location, speakService) {
+  '$mdToast',
+  function ($rootScope, $scope, $location, speakService, $mdToast) {
     var $ctrl = this;
 
     $ctrl.config = {
@@ -16,6 +17,8 @@ angular.module('tru.').controller('AudioPlayerController', [
     $ctrl.filesView = function () {
       $location.path($rootScope.backPath);
     };
+
+    $mdToast.show($mdToast.simple().textContent('The braille controller is updated'));
 
     speakService.speak('Now playing ' + $rootScope.currentMedia.label + '!', function () {
       "use strict";

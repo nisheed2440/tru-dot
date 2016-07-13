@@ -17,8 +17,8 @@
         <md-list-item
           class="md-2-line"
           ng-click="playMedia(file)"
-          ng-mouseover="toneOn($index)"
-          ng-mouseout="toneOff($index)">
+          ng-mouseenter="toneOn($index)"
+          ng-mouseleave="toneOff($index)">
           <md-icon class="md-avatar-icon" md-svg-src="{{file.icon}}"></md-icon>
           <div class="md-list-item-text">
             <h3>{{ file.label }}</h3>

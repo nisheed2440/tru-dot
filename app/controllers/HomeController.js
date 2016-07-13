@@ -5,7 +5,8 @@ angular.module('tru.').controller('HomeController', [
   'tone',
   'oscillatorService',
   'speakService',
-  function ($rootScope, $scope, $location, Tone, oscillatorService,speakService) {
+  '$mdToast',
+  function ($rootScope, $scope, $location, Tone, oscillatorService, speakService, $mdToast) {
     console.log('Tru. Home!');
 
     speakService.speak('Home Page!');
@@ -38,6 +39,7 @@ angular.module('tru.').controller('HomeController', [
 
     $scope.toneOn = function (index) {
       "use strict";
+      $mdToast.show($mdToast.simple().textContent($scope.options[index].label + ' sent to braille controller!'));
       oscillatorService.updateOsc($scope.freqencyIntervals[index]);
       oscillatorService.unmuteOsc();
     };
