@@ -1,0 +1,29 @@
+<div class="td-header md-padding" flex="none">
+  <div layout="row">
+    <md-button class="md-fab md-mini" aria-label="Back" ng-click="homeView()">
+      <md-icon md-svg-src="assets/ic_arrow_back_24px.svg"></md-icon>
+    </md-button>
+    <div flex="">
+      <img src="assets/logo.png" alt="logo" height="40"/>
+    </div>
+  </div>
+</div>
+<div class="md-padding" flex="noshrink">
+  <md-card md-whiteframe="10">
+    <md-subheader>{{folderName}}</md-subheader>
+    <md-list>
+      <md-divider ng-if="files.length"></md-divider>
+      <div ng-repeat="file in files" ng-if="files.length">
+        <md-list-item class="md-2-line" ng-click="playMedia(file)">
+          <md-icon class="md-avatar-icon" md-svg-src="{{file.icon}}"></md-icon>
+          <div class="md-list-item-text">
+            <h3>{{ file.label }}</h3>
+
+            <p>{{ file.excerpt }}</p>
+          </div>
+        </md-list-item>
+        <md-divider ng-if="!$last"></md-divider>
+      </div>
+    </md-list>
+  </md-card>
+</div>

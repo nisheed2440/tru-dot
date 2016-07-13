@@ -1,0 +1,28 @@
+<div class="td-header md-padding" flex="none">
+  <div layout="row">
+    <md-button class="md-fab md-mini" aria-label="Back" ng-click="controller.filesView()">
+      <md-icon md-svg-src="assets/ic_arrow_back_24px.svg"></md-icon>
+    </md-button>
+    <div flex="">
+      <img src="assets/logo.png" alt="logo" height="40"/>
+    </div>
+  </div>
+</div>
+<div class="md-padding" flex="noshrink" layout="column">
+  <div flex=""></div>
+  <videogular vg-theme="controller.config.theme.url" class="videogular-container audio"
+              vg-auto-play="controller.autoplay">
+    <vg-media vg-src="controller.config.sources" vg-type="audio"></vg-media>
+    <vg-controls>
+      <vg-play-pause-button></vg-play-pause-button>
+      <vg-scrub-bar>
+        <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+      </vg-scrub-bar>
+      <vg-volume>
+        <vg-mute-button></vg-mute-button>
+        <vg-volume-bar></vg-volume-bar>
+      </vg-volume>
+    </vg-controls>
+  </videogular>
+  <div flex=""></div>
+</div>

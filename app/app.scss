@@ -1,0 +1,50 @@
+html, body {
+  background: #4B79A1; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to left, #4B79A1, #283E51); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left, #4B79A1, #283E51); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                         not supported by any browser */
+}
+
+html, body {
+  @extend .noselect;
+}
+
+.td-logo {
+  color: darken(#283E51, 5%);
+  &-img {
+    opacity: 0;
+  }
+  &-text {
+    text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+}
+
+.animated {
+  &.in {
+    opacity: 1;
+  }
+}
+
+.td-header {
+  text-align: left;
+  img{
+    margin-top: 6px;
+  }
+}
+
+.md-subheader {
+  text-transform: capitalize;
+}

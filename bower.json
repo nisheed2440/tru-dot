@@ -1,0 +1,37 @@
+{
+  "name": "tru-dot",
+  "description": "Troubleshoot prototype",
+  "main": "main.js",
+  "authors": [
+    "Nisheed Jagadish"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "gulp",
+    "electron",
+    "ife"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "^1.0.9",
+    "angular-route": "^1.5.7",
+    "angular": "^1.5.7",
+    "animate.css": "^3.5.2",
+    "Ionicons": "ionicons#^2.0.1",
+    "lodash": "^4.13.1",
+    "videogular": "^1.4.4",
+    "videogular-themes-default": "^1.4.4",
+    "videogular-controls": "^1.4.4",
+    "videogular-buffering": "^1.4.4",
+    "videogular-poster": "^1.4.4",
+    "angular-sanitize": "^1.5.7"
+  }
+}
